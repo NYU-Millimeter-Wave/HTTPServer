@@ -59,7 +59,7 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
         """ Curl sample """
         """ curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"abc"}' localhost:8000"""
-         """(you have to close the processus after with ctrl+C)"""
+        """(you have to close the processus after with ctrl+C)"""
         for line in self.rfile:
             print(line)
         json_string = line
