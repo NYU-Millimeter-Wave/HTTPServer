@@ -42,7 +42,6 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_GET(self):
         """Serve a GET request."""
-        print("Je modifie le bon fichier")
         f = self.send_head()
         if f:
             try:
@@ -59,15 +58,20 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
         """ Curl sample """
         """ curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"abc"}' localhost:8000"""
-        """(you have to close the processus after with ctrl+C)"""
-        for line in self.rfile:
-            print(line)
+        print "in post method 2"
+        
+
+        line = self.rfile.read(int(self.headers['Content-Length']))
+        self.send_response(200)
+        self.end_headers()
+        
         json_string = line
         parsed_json = json.loads(json_string)
         print("test username")
         print(parsed_json['username'])
         print("test password")
         print(parsed_json['password'])
+        return
 
     def send_head(self):
         """Common code for GET and HEAD commands.
