@@ -24,8 +24,16 @@ try:
 except ImportError:
     from StringIO import StringIO
 
+class RoombaHTTPServer():
 
-class RoombaHTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
+    def __init__(self):
+        self.handlerClass = RoombaHTTPServerHandler
+        self.serverClass  = BaseHTTPServer.HTTPServer
+        
+    def start(self):
+        BaseHTTPServer.test(self.handlerClass, self.serverClass)
+
+class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     """Simple HTTP request handler with GET and HEAD commands.
 
@@ -39,10 +47,7 @@ class RoombaHTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
     """
 
     server_version = "SimpleHTTP/" + __version__
-
-    def __init__(self):
-        pass
-
+    
     def do_GET(self):
         """Serve a GET request."""
         f = self.send_head()
@@ -242,11 +247,3 @@ class RoombaHTTPServer(BaseHTTPServer.BaseHTTPRequestHandler):
         '.h': 'text/plain',
         })
 
-
-def test(HandlerClass = SimpleHTTPRequestHandler,
-         ServerClass = BaseHTTPServer.HTTPServer):
-    BaseHTTPServer.test(HandlerClass, ServerClass)
-
-
-if __name__ == '__main__':
-    test()
