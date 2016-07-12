@@ -60,7 +60,7 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         """
         f = self.send_head()
         print("GET method "+ currentdata.json_string)
-        self.wfile.write(currentdata.json_string)
+        self.wfile.write(currentdata.parsed_json)
 
     def do_HEAD(self):
         """Serve a HEAD request."""
