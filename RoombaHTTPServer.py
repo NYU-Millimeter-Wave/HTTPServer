@@ -19,10 +19,14 @@ import sys
 import shutil
 import mimetypes
 import json
+from DataManager import DataManager
 try:
     from cStringIO import StringIO
 except ImportError:
     from StringIO import StringIO
+
+currentdata = DataManager()
+currentput = DataManager()
 
 class RoombaHTTPServer():
 
@@ -47,15 +51,16 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     """
 
     server_version = "SimpleHTTP/" + __version__
+
+
     
     def do_GET(self):
-        """Serve a GET request."""
+        """Serve a GET request.
+        curl -H "Accept:application/json" http://localhost:8000/
+        """
         f = self.send_head()
-        if f:
-            try:
-                self.copyfile(f, self.wfile)
-            finally:
-                f.close()
+        print("GET method "+ currentdata.json_string)
+        self.wfile.write(currentdata.json_string)
 
     def do_HEAD(self):
         """Serve a HEAD request."""
@@ -66,19 +71,32 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
         """ Curl sample """
         """ curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"abc"}' localhost:8000"""
-        print "in post method 2"
-        
+        global currentdata
 
-        line = self.rfile.read(int(self.headers['Content-Length']))
+
+        currentdata.json_string = self.rfile.read(int(self.headers['Content-Length']))
         self.send_response(200)
         self.end_headers()
+
+        print("json_string =" + currentdata.json_string)
+
+        currentdata.parsed_json = json.loads(currentdata.json_string)
+        currentdata.printData()
+        return
+
+    def do_PUT(self):
+        """ curl -H "Content-Type: application/json" -X PUT -d '{"username":"blabla"}' localhost:8000"""
+        global currentput
+        global currentdata
         
-        json_string = line
-        parsed_json = json.loads(json_string)
-        print("test username")
-        print(parsed_json['username'])
-        print("test password")
-        print(parsed_json['password'])
+        currentput.json_string = self.rfile.read(int(self.headers['Content-Length']))
+        self.send_response(200)
+        self.end_headers()
+
+        currentput.parsed_json = json.loads(currentput.json_string)
+        print("json_put=" + currentput.json_string)
+        currentdata.refresh(currentput.json_string,currentput.parsed_json)
+        currentdata.printData()
         return
 
     def send_head(self):
