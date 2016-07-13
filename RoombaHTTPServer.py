@@ -60,7 +60,7 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         """
         f = self.send_head()
         print("GET method "+ currentdata.json_string)
-        self.wfile.write(currentdata.parsed_json)
+        self.wfile.write(currentdata.json_string)
 
     def do_HEAD(self):
         """Serve a HEAD request."""
@@ -71,7 +71,6 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     def do_POST(self):
         """ Curl sample """
         """ curl -H "Content-Type: application/json" -X POST -d '{"username":"xyz","password":"abc"}' localhost:8000"""
-        global currentdata
 
 
         currentdata.json_string = self.rfile.read(int(self.headers['Content-Length']))
@@ -86,8 +85,6 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
     def do_PUT(self):
         """ curl -H "Content-Type: application/json" -X PUT -d '{"username":"blabla"}' localhost:8000"""
-        global currentput
-        global currentdata
         
         currentput.json_string = self.rfile.read(int(self.headers['Content-Length']))
         self.send_response(200)
@@ -97,6 +94,7 @@ class RoombaHTTPServerHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         print("json_put=" + currentput.json_string)
         currentdata.refresh(currentput.json_string,currentput.parsed_json)
         currentdata.printData()
+        currentdata.json_string = json.dumps(currentdata.parsed_json)
         return
 
     def send_head(self):
